@@ -1,23 +1,35 @@
+locals {
+  random_pet            = random_pet.random_pet.id
+  valheim_project_name  = !var.test ? "Valheim" : "Valheim-${local.random_pet}"
+  valheim_network_name  = !var.test ? "valheim-network" : "valheim-network-${local.random_pet}"
+  valheim_droplet_name  = !var.test ? "Valheim-Server" : "Valheim-Server-${local.random_pet}"
+  valheim_firewall_name = !var.test ? "valheim-firewall" : "valheim-firewall-${local.random_pet}"
+
+  octet3               = random_integer.octet3.result
+  octet4               = random_integer.octet4.result
+  valheim_vpc_ip_range = !var.test ? "10.10.10.2/24" : "10.10.${local.octet3}.${local.octet4}/24"
+}
+
 # Create a new project
 resource "digitalocean_project" "valheim_project" {
-  name        = "Valheim${var.test == "true" ? random_pet.random_pet.id : ""}"
+  name        = local.valheim_project_name
   description = "A project to group Valheim server-related resources."
   purpose     = "Service or API"
   environment = "Production"
 }
 
 # Create a Virtual Private Cloud (VPC) – a private network
+# See: https://www.digitalocean.com/community/tutorials/understanding-ip-addresses-subnets-and-cidr-notation-for-networking
 resource "digitalocean_vpc" "valheim_vpc" {
-  name   = "valheim-network${var.test == "true" ? random_pet.random_pet.id : ""}"
-  region = var.droplet_region
-  # See: https://www.digitalocean.com/community/tutorials/understanding-ip-addresses-subnets-and-cidr-notation-for-networking
-  ip_range = var.test == "false" ? "10.10.10.0/24" : "10.10.${random_integer.octet3.result}.${random_integer.octet4.result}/24"
+  name     = local.valheim_network_name
+  region   = var.droplet_region
+  ip_range = local.valheim_vpc_ip_range
 }
 
 # Create a new Droplet
 resource "digitalocean_droplet" "valheim_droplet" {
   image              = var.droplet_image_type
-  name               = "Valheim-Server${var.test == "true" ? random_pet.random_pet.id : ""}"
+  name               = local.valheim_droplet_name
   region             = var.droplet_region
   size               = var.droplet_size
   vpc_uuid           = digitalocean_vpc.valheim_vpc.id
@@ -31,22 +43,26 @@ resource "digitalocean_droplet" "valheim_droplet" {
     host        = self.ipv4_address
     user        = "root"
     type        = "ssh"
-    private_key = file(var.do_ssh_key_path)
+    private_key = file(pathexpand(var.do_ssh_key_path))
     timeout     = "2m"
   }
 
   provisioner "remote-exec" {
     inline = [
-      # If the `/root/valheim/saves` directory doesn't exist, the file provisioner will put the `worlds` directory
-      # inside `/root/valheim`.
+      # Required by the file provisioner.
       "mkdir -p /root/valheim/saves"
     ]
   }
 
   # Copy over the save files -- they'll be mounted into the Docker container.
   provisioner "file" {
-    source      = var.valheim_local_saves
-    destination = "/root/valheim"
+    # NOTE: The trailing slash is required for the provisioner to only copy the contents from the given directory into
+    # the specified path -- it won't generate the specified destination path.
+    # `pathexpand()` transforms `~` into an absolute path, and removes the trailing slash to prevent doubling it.
+    # See: https://www.terraform.io/docs/language/resources/provisioners/file.html#directory-uploads
+    # See: https://www.terraform.io/docs/language/functions/pathexpand.html
+    source      = "${pathexpand(var.valheim_local_saves)}/"
+    destination = "/root/valheim/saves"
   }
 
   provisioner "remote-exec" {
@@ -81,7 +97,7 @@ resource "digitalocean_project_resources" "valheim_resource" {
 
 # Add firewall rules
 resource "digitalocean_firewall" "valheim_droplet_firewall" {
-  name = "valheim-firewall${var.test == "true" ? random_pet.random_pet.id : ""}"
+  name = local.valheim_firewall_name
 
   droplet_ids = [
     digitalocean_droplet.valheim_droplet.id,

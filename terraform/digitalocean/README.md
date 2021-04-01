@@ -32,7 +32,7 @@ See: <https://www.digitalocean.com/docs/apis-clis/api/create-personal-access-tok
 ### `do_ssh_key_path` (required)
 
 Path to a private SSH key without a passphrase that's been added to a
-DigitalOcean account. Needed for provisioning of the Droplet.
+DigitalOcean account. Needed to provision the Droplet.
 
 NOTE: This is the SSH key you would use to connect to the Droplet, if
 necessary.
@@ -42,7 +42,8 @@ See: <https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/to-account>
 ### `do_terraform_ssh_key_name` (optional)
 
 Name of the SSH key added to a DigitalOcean account (as is visible on
-DigitalOcean).
+DigitalOcean). Normally, it should be the same SSH key that's been specified in
+the `do_ssh_key_path` variable.
 
 The `digitalocean_ssh_key` data source fetches its details from DigitalOcean.
 Then, the `digitalocean_droplet` uses the ID from the details to add this SSH
@@ -98,16 +99,16 @@ Defaults to `Default`.
 
 ### `valheim_local_saves` (optional)
 
-Path to the local saves parent directory (the one above `worlds/`). If the game
-is installed on the local system, the path should be something like this (no
-trailing slash!):
+Path to the local saves parent directory (the one that contains `worlds/`). If
+the game is installed on the local system, the path should be something like
+this (might have to use forward slashes though):
 
 ```text
 C:\Users\%USERPROFILE%\AppData\LocalLow\IronGate\Valheim
 ```
 
-Alternatively, put the save files into `valheim/saves/worlds` in the root of
-the repository.
+Alternatively, put the save files into `valheim/saves` in the root of this
+repository.
 
 Defaults to the `valheim/saves` directory present in the root of the
 repository.

@@ -51,8 +51,9 @@ variable "valheim_world_name" {
 }
 
 # Path to the local saves parent directory (the one above `worlds/`). If the game is installed on the local system, the
-# path should be something like this: C:\Users\%USERPROFILE%\AppData\LocalLow\IronGate\Valheim\worlds
-# Defaults to the directory present in the repository.
+# path should be something like this: C:\Users\%USERPROFILE%\AppData\LocalLow\IronGate\Valheim
+# NOTE: you might have to use forward slashes for the above path.
+# Defaults to the `valheim/saves` directory present in the repository.
 variable "valheim_local_saves" {
   default = "../../valheim/saves"
 }
@@ -62,12 +63,12 @@ variable "valheim_local_saves" {
 ######################################################################################################################
 # Whether this execution is a test provision.
 variable "test" {
-  default = "false"
+  default = false
+  type    = bool
 }
 
 resource "random_pet" "random_pet" {
   length    = 2
-  prefix = "-"
   separator = "-"
 }
 
