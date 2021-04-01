@@ -1,22 +1,13 @@
 # Valheim Server Terraformed
 
-## Deploy
+Provisioning Valheim servers with ease – infrastructure as code, and all that.
 
-DigitalOcean example:
+Refer to cloud provider-specific instructions under `terraform/`.
 
-```console
-cd terraform/digitalocean
-terraform init
+## Table of contents
 
-export DO_PAT='abcd1234'
-export TERRAFORM_SSH_KEY="${HOME}/.ssh/id_ed25519_digitalocean"
+- [DigitalOcean](./terraform/digitalocean/README.md)
 
-terraform plan \
-    -var "do_token=${DO_PAT}" \
-    -var "private_ssh_key=${TERRAFORM_SSH_KEY}"
+## See also
 
-# If the plan passed and looks right, deploy the resources
-terraform apply \
-    -var "do_token=${DO_PAT}" \
-    -var "private_ssh_key=${TERRAFORM_SSH_KEY}"
-```
+- [Valheim server on Amazon Lightsail](https://aws.amazon.com/getting-started/hands-on/valheim-on-aws)
