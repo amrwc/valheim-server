@@ -99,7 +99,8 @@ Defaults to `Default`.
 ### `valheim_local_saves` (optional)
 
 Path to the local saves parent directory (the one above `worlds/`). If the game
-is installed on the local system, the path should be something like this:
+is installed on the local system, the path should be something like this (no
+trailing slash!):
 
 ```text
 C:\Users\%USERPROFILE%\AppData\LocalLow\IronGate\Valheim
@@ -146,7 +147,7 @@ terraform apply \
     -var "do_token=${DO_PAT}" \
     -var "private_ssh_key=${TERRAFORM_SSH_KEY}" \
     -var "valheim_server_name=Valheim" \
-    -var "hunter1" \
+    -var "hunter2" \
     -var "valheim_world_name=NewWorld"
 ```
 

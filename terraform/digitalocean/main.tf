@@ -35,6 +35,14 @@ resource "digitalocean_droplet" "valheim_droplet" {
     timeout     = "2m"
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      # If the `/root/valheim/saves` directory doesn't exist, the file provisioner will put the `worlds` directory
+      # inside `/root/valheim`.
+      "mkdir -p /root/valheim/saves"
+    ]
+  }
+
   # Copy over the save files -- they'll be mounted into the Docker container.
   provisioner "file" {
     source      = var.valheim_local_saves
@@ -57,6 +65,7 @@ resource "digitalocean_droplet" "valheim_droplet" {
       "    --env DEBUG_OUTPUT=true \\",
       "    --publish 2456-2458:2456-2458/udp \\",
       "    --volume /root/valheim/saves:/serverdata/serverfiles/.config/unity3d/IronGate/Valheim \\",
+      "    --volume /root/valheim/backups:/serverdata/serverfiles/Backups \\",
       "    ich777/steamcmd:valheim",
     ]
   }

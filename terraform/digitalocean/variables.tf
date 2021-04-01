@@ -67,6 +67,7 @@ variable "test" {
 
 resource "random_pet" "random_pet" {
   length    = 2
+  prefix = "-"
   separator = "-"
 }
 
