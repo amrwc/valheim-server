@@ -3,3 +3,6 @@
 .terraform/
 .terraform*
 **.tfstate*
+
+valheim/saves/worlds/*
+!valheim/saves/worlds/.gitkeep
