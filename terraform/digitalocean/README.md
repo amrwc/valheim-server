@@ -101,10 +101,10 @@ Defaults to `Default`.
 
 Path to the local saves parent directory (the one that contains `worlds/`). If
 the game is installed on the local system, the path should be something like
-this (might have to use forward slashes though):
+this (use forward slashes):
 
 ```text
-C:\Users\%USERPROFILE%\AppData\LocalLow\IronGate\Valheim
+C:/Users/<USERNAME>/AppData/LocalLow/IronGate/Valheim
 ```
 
 Alternatively, put the save files into `valheim/saves` in the root of this

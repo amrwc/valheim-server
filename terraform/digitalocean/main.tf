@@ -65,6 +65,9 @@ resource "digitalocean_droplet" "valheim_droplet" {
     destination = "/root/valheim/saves"
   }
 
+  # Rewrite using `docker` resource when `provider` will support `depends_on` option.
+  # See: https://github.com/hashicorp/terraform/issues/2430
+  # See: https://registry.terraform.io/providers/kreuzwerker/docker
   provisioner "remote-exec" {
     inline = [
       "export PATH=$PATH:/usr/bin",
@@ -96,6 +99,8 @@ resource "digitalocean_project_resources" "valheim_resource" {
 }
 
 # Add firewall rules
+# NOTE: There was no real reason to push this resource to the bottom of the script, but these rules _may_ cause issues
+# with pulling the Docker image if it's before the `docker_image` resource.
 resource "digitalocean_firewall" "valheim_droplet_firewall" {
   name = local.valheim_firewall_name
 

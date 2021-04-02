@@ -1,19 +1,17 @@
 ######################################################################################################################
 # Secrets ############################################################################################################
 ######################################################################################################################
-# DigitalOcean Personal Access Token. 
 variable "do_token" {
-  # Provided in the CLI. 
+  description = "DigitalOcean Personal Access Token."
 }
 
-# Path to the SSH key which can access DO services.
 variable "do_ssh_key_path" {
-  # Provided in the CLI.
+  description = "Path to the SSH key which can access DO services."
 }
 
-# Name of the SSH key added to DigitalOcean.
 variable "do_terraform_ssh_key_name" {
-  default = "id_ed25519_digitalocean_terraform"
+  description = "Name of the SSH key added to DigitalOcean."
+  default     = "id_ed25519_digitalocean_terraform"
 }
 
 ######################################################################################################################
@@ -35,36 +33,37 @@ variable "droplet_size" {
 ######################################################################################################################
 # Valheim server-specific variables ##################################################################################
 ######################################################################################################################
-# Name of the dedicated server.
 variable "valheim_server_name" {
-  default = "Valheim Docker DigitalOcean"
+  description = "Name of the dedicated server."
+  default     = "Valheim Docker DigitalOcean"
 }
 
-# Password used to log into the server. Requires 5 chars at a minimum.
 variable "valheim_server_password" {
-  default = "hunter2"
+  description = "Password used to log into the server. Requires 5 chars at a minimum."
+  default     = "hunter2"
 }
 
-# Name of the world -- use the name of the files in `worlds/` dir.
 variable "valheim_world_name" {
-  default = "Default"
+  description = "Name of the world -- use the name of the files in `worlds/` dir."
+  default     = "Default"
 }
 
-# Path to the local saves parent directory (the one above `worlds/`). If the game is installed on the local system, the
-# path should be something like this: C:\Users\%USERPROFILE%\AppData\LocalLow\IronGate\Valheim
-# NOTE: you might have to use forward slashes for the above path.
+# If the game is installed on the local system, the path should be something like this:
+# C:/Users/<USERNAME>/AppData/LocalLow/IronGate/Valheim
+# NOTE: backslashes are not supported.
 # Defaults to the `valheim/saves` directory present in the repository.
 variable "valheim_local_saves" {
-  default = "../../valheim/saves"
+  description = "Path to the local saves parent directory (the one above `worlds/`)."
+  default     = "../../valheim/saves"
 }
 
 ######################################################################################################################
 # Miscellaneous ######################################################################################################
 ######################################################################################################################
-# Whether this execution is a test provision.
 variable "test" {
-  default = false
-  type    = bool
+  description = "Whether this execution is a test provision."
+  default     = false
+  type        = bool
 }
 
 resource "random_pet" "random_pet" {
