@@ -1,18 +1,26 @@
 locals {
-  random_pet            = random_pet.random_pet.id
-  valheim_project_name  = !var.test ? "Valheim" : "Valheim-${local.random_pet}"
-  valheim_network_name  = !var.test ? "valheim-network" : "valheim-network-${local.random_pet}"
-  valheim_droplet_name  = !var.test ? "Valheim-Server" : "Valheim-Server-${local.random_pet}"
-  valheim_firewall_name = !var.test ? "valheim-firewall" : "valheim-firewall-${local.random_pet}"
+  random_pet    = random_pet.random_pet.id
+  random_octet3 = random_integer.octet3.result
+  random_octet4 = random_integer.octet4.result
 
-  octet3               = random_integer.octet3.result
-  octet4               = random_integer.octet4.result
-  valheim_vpc_ip_range = !var.test ? "10.10.10.2/24" : "10.10.${local.octet3}.${local.octet4}/24"
+  valheim = var.test ? {
+    project_name  = "Valheim-${local.random_pet}"
+    network_name  = "valheim-network-${local.random_pet}"
+    droplet_name  = "Valheim-Server-${local.random_pet}"
+    firewall_name = "valheim-firewall-${local.random_pet}"
+    vpc_ip_range  = "10.10.${local.random_octet3}.${local.random_octet4}/24"
+    } : {
+    project_name  = "Valheim-${var.valheim_server_name}"
+    network_name  = "valheim-network-${var.valheim_server_name}"
+    droplet_name  = "Valheim-Server-${var.valheim_server_name}"
+    firewall_name = "valheim-firewall-${var.valheim_server_name}"
+    vpc_ip_range  = var.vpc_ip_range
+  }
 }
 
 # Create a new project
 resource "digitalocean_project" "valheim_project" {
-  name        = local.valheim_project_name
+  name        = local.valheim["project_name"]
   description = "A project to group Valheim server-related resources."
   purpose     = "Service or API"
   environment = "Production"
@@ -21,15 +29,15 @@ resource "digitalocean_project" "valheim_project" {
 # Create a Virtual Private Cloud (VPC) – a private network
 # See: https://www.digitalocean.com/community/tutorials/understanding-ip-addresses-subnets-and-cidr-notation-for-networking
 resource "digitalocean_vpc" "valheim_vpc" {
-  name     = local.valheim_network_name
+  name     = local.valheim["network_name"]
   region   = var.droplet_region
-  ip_range = local.valheim_vpc_ip_range
+  ip_range = local.valheim["vpc_ip_range"]
 }
 
 # Create a new Droplet
 resource "digitalocean_droplet" "valheim_droplet" {
   image              = var.droplet_image_type
-  name               = local.valheim_droplet_name
+  name               = local.valheim["droplet_name"]
   region             = var.droplet_region
   size               = var.droplet_size
   vpc_uuid           = digitalocean_vpc.valheim_vpc.id
@@ -102,7 +110,7 @@ resource "digitalocean_project_resources" "valheim_resource" {
 # NOTE: There was no real reason to push this resource to the bottom of the script, but these rules _may_ cause issues
 # with pulling the Docker image if it's before the `docker_image` resource.
 resource "digitalocean_firewall" "valheim_droplet_firewall" {
-  name = local.valheim_firewall_name
+  name = local.valheim["firewall_name"]
 
   droplet_ids = [
     digitalocean_droplet.valheim_droplet.id,

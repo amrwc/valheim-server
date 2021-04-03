@@ -57,7 +57,9 @@ See: <https://registry.terraform.io/providers/digitalocean/digitalocean/latest/d
 
 The public name of the Valheim server.
 
-Defaults to `Valheim Docker DigitalOcean`.
+NOTE: This name will be appended to the resource names on DigitalOcean.
+
+Defaults to `Terraformed`.
 
 ### `valheim_server_password` (optional)
 
