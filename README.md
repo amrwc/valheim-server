@@ -23,9 +23,9 @@ docker logs [--follow] valheim_server
 ```
 
 If you see a log, such as the following, and nothing seems to happen
-afterwards, while the VM utilises a lot of resources, it means that the world
-is still being loaded. If it persists for longer than, say, 15 minutes, the VM
-should be increased.
+afterwards while the VM utilises a lot of resources, it means that the world is
+still being loaded. If it persists for longer than, say, 15 minutes, increase
+the VM size and try again.
 
 ```text
 04/03/2021 12:47:22: Starting to load scene:start
